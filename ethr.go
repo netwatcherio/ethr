@@ -1,9 +1,9 @@
-//-----------------------------------------------------------------------------
+// Package ethr -----------------------------------------------------------------------------
 // Copyright (C) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE.txt file in the project root for full license information.
-//-----------------------------------------------------------------------------
-package main
+// -----------------------------------------------------------------------------
+package ethr
 
 import (
 	"flag"
@@ -21,10 +21,37 @@ const defaultBufferLenStr = "16KB"
 
 var (
 	gVersion     string
-	loggingLevel LogLevel = LogLevelInfo
+	loggingLevel = LogLevelInfo
 )
 
-func main() {
+type NonCliConfig struct {
+	use4 bool
+	use6 bool
+	port int
+	ip   string
+	// Server
+	isServer bool
+
+	// Client & External Client
+	clientDest  string
+	bufLenStr   string
+	bwRateStr   string
+	cport       int
+	duration    time.Duration
+	gap         time.Duration
+	iterCount   int
+	ncs         bool
+	protocol    string
+	reverse     bool
+	testTypePtr string
+	tos         int
+	title       string
+	thCount     int
+	wc          int
+	xClientDest string
+}
+
+func RunEthr(cli bool, config *NonCliConfig) {
 	//
 	// If version is not set via ldflags, then default to UNKNOWN
 	//
@@ -34,6 +61,7 @@ func main() {
 
 	fmt.Println("\nEthr: Comprehensive Network Performance Measurement Tool (Version: " + gVersion + ")")
 	fmt.Println("Maintainer: Pankaj Garg (ipankajg @ LinkedIn | GitHub | Gmail | Twitter)")
+	fmt.Println("This is a fork with slight modifications to suit NetWatcher.io")
 	fmt.Println("")
 
 	//
@@ -43,38 +71,127 @@ func main() {
 	// higher number of threads via GOMAXPROCS solves this problem.
 	//
 	runtime.GOMAXPROCS(1024)
+	var noOutput *bool
+	var outputFile *string
+	var debug *bool
 
-	// Common
-	flag.Usage = func() { ethrUsage() }
-	noOutput := flag.Bool("no", false, "")
-	outputFile := flag.String("o", defaultLogFileName, "")
-	debug := flag.Bool("debug", false, "")
-	use4 := flag.Bool("4", false, "")
-	use6 := flag.Bool("6", false, "")
-	port := flag.Int("port", 8888, "")
-	ip := flag.String("ip", "", "")
+	var use4 *bool
+	var use6 *bool
+
+	var isServer *bool
+	var showUI *bool
+	var clientDest *string
+	var bufLenStr *string
+	var bwRateStr *string
+	var cport *int
+	var duration *time.Duration
+	var gap *time.Duration
+	var iterCount *int
+	var ncs *bool
+	var protocol *string
+	var reverse *bool
+	var testTypePtr *string
+	var tos *int
+	var title *string
+	var thCount *int
+	var wc *int
+	var xClientDest *string
+
+	//common
+	*noOutput = false
+	*outputFile = defaultLogFileName
+	*debug = false
+
+	*use4 = false
+	*use6 = false
+
+	var port *int
+	*port = 8888
+
+	var ip *string
+
+	*ip = ""
 	// Server
-	isServer := flag.Bool("s", false, "")
-	showUI := flag.Bool("ui", false, "")
+	*isServer = false
+	*showUI = false
 	// Client & External Client
-	clientDest := flag.String("c", "", "")
-	bufLenStr := flag.String("l", "", "")
-	bwRateStr := flag.String("b", "", "")
-	cport := flag.Int("cport", 0, "")
-	duration := flag.Duration("d", 10*time.Second, "")
-	gap := flag.Duration("g", time.Second, "")
-	iterCount := flag.Int("i", 1000, "")
-	ncs := flag.Bool("ncs", false, "")
-	protocol := flag.String("p", "tcp", "")
-	reverse := flag.Bool("r", false, "")
-	testTypePtr := flag.String("t", "", "")
-	tos := flag.Int("tos", 0, "")
-	title := flag.String("T", "", "")
-	thCount := flag.Int("n", 1, "")
-	wc := flag.Int("w", 1, "")
-	xClientDest := flag.String("x", "", "")
+	*clientDest = ""
+	*bufLenStr = ""
+	*bwRateStr = ""
+	*cport = 1
+	*duration = 10 * time.Second
+	*gap = time.Second
+	*iterCount = 1000
+	*ncs = false
+	*protocol = ""
+	*reverse = false
+	*testTypePtr = ""
+	*tos = 1
+	*title = ""
+	*thCount = 1
+	*wc = 1
+	*xClientDest = ""
 
-	flag.Parse()
+	if config != nil {
+		*use4 = config.use4
+		*use6 = config.use6
+		*port = config.port
+		*ip = "0.0.0.0"
+		// Server
+		*isServer = config.isServer
+		// Client & External Client
+		*clientDest = config.clientDest
+		*bufLenStr = config.bufLenStr
+		*bwRateStr = config.bwRateStr
+		*cport = config.cport
+		*duration = config.duration
+		*gap = config.gap
+		*iterCount = config.iterCount
+		*protocol = config.protocol
+		*reverse = config.reverse
+		*testTypePtr = config.testTypePtr
+		*tos = config.tos
+		*title = ""
+		*thCount = 1
+		*wc = 1
+		*xClientDest = config.xClientDest
+	} else {
+
+	}
+
+	if cli {
+		// Common
+		flag.Usage = func() { ethrUsage() }
+		noOutput = flag.Bool("no", false, "")
+		outputFile = flag.String("o", defaultLogFileName, "")
+		debug = flag.Bool("debug", false, "")
+		use4 = flag.Bool("4", false, "")
+		use6 = flag.Bool("6", false, "")
+		port = flag.Int("port", 8888, "")
+		ip = flag.String("ip", "", "")
+		// Server
+		isServer = flag.Bool("s", false, "")
+		showUI = flag.Bool("ui", false, "")
+		// Client & External Client
+		clientDest = flag.String("c", "", "")
+		bufLenStr = flag.String("l", "", "")
+		bwRateStr = flag.String("b", "", "")
+		cport = flag.Int("cport", 0, "")
+		duration = flag.Duration("d", 10*time.Second, "")
+		gap = flag.Duration("g", time.Second, "")
+		iterCount = flag.Int("i", 1000, "")
+		ncs = flag.Bool("ncs", false, "")
+		protocol = flag.String("p", "tcp", "")
+		reverse = flag.Bool("r", false, "")
+		testTypePtr = flag.String("t", "", "")
+		tos = flag.Int("tos", 0, "")
+		title = flag.String("T", "", "")
+		thCount = flag.Int("n", 1, "")
+		wc = flag.Int("w", 1, "")
+		xClientDest = flag.String("x", "", "")
+
+		flag.Parse()
+	}
 
 	if *isServer {
 		if *clientDest != "" {

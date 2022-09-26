@@ -1,9 +1,9 @@
-//-----------------------------------------------------------------------------
+// Package ethr -----------------------------------------------------------------------------
 // Copyright (C) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE.txt file in the project root for full license information.
-//-----------------------------------------------------------------------------
-package main
+// -----------------------------------------------------------------------------
+package ethr
 
 import (
 	"encoding/json"
@@ -59,7 +59,7 @@ type logTestResults struct {
 }
 
 var loggingActive = false
-var logChan = make(chan string, 64)
+var LogChan = make(chan string, 64)
 
 func logInit(fileName string) {
 	if fileName == "" {
@@ -82,7 +82,7 @@ func logFini() {
 
 func runLogger(logFile *os.File) {
 	for loggingActive {
-		s := <-logChan
+		s := <-LogChan
 		log.Println(s)
 	}
 	logFile.Close()
@@ -96,7 +96,7 @@ func logMsg(prefix, msg string) {
 		logData.Type = prefix
 		logData.Message = msg
 		logJSON, _ := json.Marshal(logData)
-		logChan <- string(logJSON)
+		LogChan <- string(logJSON)
 	}
 }
 
@@ -125,7 +125,7 @@ func logResults(s []string) {
 		logData.PacketsPerSecond = s[4]
 		logData.AverageLatency = s[5]
 		logJSON, _ := json.Marshal(logData)
-		logChan <- string(logJSON)
+		LogChan <- string(logJSON)
 	}
 }
 
@@ -147,6 +147,6 @@ func logLatency(remoteIP, proto string, avg, min, p50, p90, p95, p99, p999, p999
 		logData.P9999 = durationToString(p9999)
 		logData.Max = durationToString(max)
 		logJSON, _ := json.Marshal(logData)
-		logChan <- string(logJSON)
+		LogChan <- string(logJSON)
 	}
 }
