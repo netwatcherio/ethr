@@ -25,30 +25,30 @@ var (
 )
 
 type NonCliConfig struct {
-	use4 bool
-	use6 bool
-	port int
-	ip   string
+	Use4 bool
+	Use6 bool
+	Port int
+	IP   string
 	// Server
-	isServer bool
+	IsServer bool
 
 	// Client & External Client
-	clientDest  string
-	bufLenStr   string
-	bwRateStr   string
-	cport       int
-	duration    time.Duration
-	gap         time.Duration
-	iterCount   int
-	ncs         bool
-	protocol    string
-	reverse     bool
-	testTypePtr string
-	tos         int
-	title       string
-	thCount     int
-	wc          int
-	xClientDest string
+	ClientDest  string
+	BufLenStr   string
+	BwRateStr   string
+	Cport       int
+	Duration    time.Duration
+	Gap         time.Duration
+	IterCount   int
+	Ncs         bool
+	Protocol    string
+	Reverse     bool
+	TestTypePtr string
+	Tos         int
+	Title       string
+	ThCount     int
+	Wc          int
+	XClientDest string
 }
 
 func RunEthr(cli bool, config *NonCliConfig) {
@@ -133,28 +133,28 @@ func RunEthr(cli bool, config *NonCliConfig) {
 	*xClientDest = ""
 
 	if config != nil {
-		*use4 = config.use4
-		*use6 = config.use6
-		*port = config.port
+		*use4 = config.Use4
+		*use6 = config.Use6
+		*port = config.Port
 		*ip = "0.0.0.0"
 		// Server
-		*isServer = config.isServer
+		*isServer = config.IsServer
 		// Client & External Client
-		*clientDest = config.clientDest
-		*bufLenStr = config.bufLenStr
-		*bwRateStr = config.bwRateStr
-		*cport = config.cport
-		*duration = config.duration
-		*gap = config.gap
-		*iterCount = config.iterCount
-		*protocol = config.protocol
-		*reverse = config.reverse
-		*testTypePtr = config.testTypePtr
-		*tos = config.tos
+		*clientDest = config.ClientDest
+		*bufLenStr = config.BufLenStr
+		*bwRateStr = config.BwRateStr
+		*cport = config.Cport
+		*duration = config.Duration
+		*gap = config.Gap
+		*iterCount = config.IterCount
+		*protocol = config.Protocol
+		*reverse = config.Reverse
+		*testTypePtr = config.TestTypePtr
+		*tos = config.Tos
 		*title = ""
 		*thCount = 1
 		*wc = 1
-		*xClientDest = config.xClientDest
+		*xClientDest = config.XClientDest
 	} else {
 
 	}
